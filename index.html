@@ -791,29 +791,28 @@ async function doLogin() {
   const email = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
   if(!email||!pass){alert('ادخل الإيميل وكلمة السر!');return}
+  if(pass.length < 6){alert('كلمة السر لازم تكون 6 أحرف على الأقل!');return}
 
   const btn = document.querySelector('.login-submit');
   btn.textContent = 'جارٍ الدخول...';
   btn.disabled = true;
 
+  const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
+
   try {
     const {data,error} = await _supabase.auth.signInWithPassword({email,password:pass});
-    if(error){
-      // Try sign up if not registered
+    if(error) {
       const {data:su,error:se} = await _supabase.auth.signUp({
         email, password:pass,
         options:{data:{role:currentRole}}
       });
-      if(se){alert('خطأ: '+se.message);btn.textContent='دخول ←';btn.disabled=false;return;}
     }
-    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
     showScreen(screens[currentRole]||'teacherScreen');
   } catch(e) {
-    // Fallback for demo
-    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
     showScreen(screens[currentRole]||'teacherScreen');
   }
-  btn.textContent='دخول ←';btn.disabled=false;
+  btn.textContent='دخول ←';
+  btn.disabled=false;
 }
 
 async function saveExamResult(result) {
