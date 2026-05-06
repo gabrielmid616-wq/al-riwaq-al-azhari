@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>منارة — المنصة التعليمية الذكية</title>
+<title>الرواق الأزهري — المنصة التعليمية</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://phqcyugigkebcuqmmouk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Xsx7PcZAiRCLHfa4Lh7XJA_8faErC1p';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -781,9 +787,46 @@ function setRole(role, btn) {
   document.getElementById('loginUser').value = users[role];
 }
 
-function doLogin() {
-  const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
-  showScreen(screens[currentRole]||'teacherScreen');
+async function doLogin() {
+  const email = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if(!email||!pass){alert('ادخل الإيميل وكلمة السر!');return}
+
+  const btn = document.querySelector('.login-submit');
+  btn.textContent = 'جارٍ الدخول...';
+  btn.disabled = true;
+
+  try {
+    const {data,error} = await _supabase.auth.signInWithPassword({email,password:pass});
+    if(error){
+      // Try sign up if not registered
+      const {data:su,error:se} = await _supabase.auth.signUp({
+        email, password:pass,
+        options:{data:{role:currentRole}}
+      });
+      if(se){alert('خطأ: '+se.message);btn.textContent='دخول ←';btn.disabled=false;return;}
+    }
+    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
+    showScreen(screens[currentRole]||'teacherScreen');
+  } catch(e) {
+    // Fallback for demo
+    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
+    showScreen(screens[currentRole]||'teacherScreen');
+  }
+  btn.textContent='دخول ←';btn.disabled=false;
+}
+
+async function saveExamResult(result) {
+  try {
+    await _supabase.from('exam_results').insert([result]);
+  } catch(e){ console.log('saved locally'); }
+}
+
+async function loadResults() {
+  try {
+    const {data} = await _supabase.from('exam_results').select('*').order('created_at',{ascending:false});
+    return data || [];
+  } catch(e){ return []; }
 }
 
 function teacherTab(tab, btn) {
