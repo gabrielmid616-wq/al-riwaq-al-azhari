@@ -787,8 +787,8 @@ function setRole(role, btn) {
   document.getElementById('loginUser').value = users[role];
 }
 
-async function doLogin() {
-  const email = document.getElementById('loginUser').value.trim();
+function doLogin() {
+
   const pass = document.getElementById('loginPass').value.trim();
   if(!email||!pass){alert('ادخل الإيميل وكلمة السر!');return}
   if(pass.length < 6){alert('كلمة السر لازم تكون 6 أحرف على الأقل!');return}
