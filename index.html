@@ -788,14 +788,7 @@ function setRole(role, btn) {
 }
 
 function doLogin() {
-  const pass = document.getElementById('loginPass').value.trim();
-  if(pass === 'riwaq123') {
-    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
-    showScreen(screens[currentRole]||'teacherScreen');
-  } else {
-    alert('كلمة السر غلط!
-كلمة السر الصحيحة: riwaq123');
-  }
+  showScreen(currentRole==='teacher'?'teacherScreen':currentRole==='parent'?'parentScreen':'studentScreen');
 }
 
 async function saveExamResult(result) {
