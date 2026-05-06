@@ -788,31 +788,14 @@ function setRole(role, btn) {
 }
 
 function doLogin() {
-
   const pass = document.getElementById('loginPass').value.trim();
-  if(!email||!pass){alert('ادخل الإيميل وكلمة السر!');return}
-  if(pass.length < 6){alert('كلمة السر لازم تكون 6 أحرف على الأقل!');return}
-
-  const btn = document.querySelector('.login-submit');
-  btn.textContent = 'جارٍ الدخول...';
-  btn.disabled = true;
-
-  const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
-
-  try {
-    const {data,error} = await _supabase.auth.signInWithPassword({email,password:pass});
-    if(error) {
-      const {data:su,error:se} = await _supabase.auth.signUp({
-        email, password:pass,
-        options:{data:{role:currentRole}}
-      });
-    }
+  if(pass === 'riwaq123') {
+    const screens = {teacher:'teacherScreen',parent:'parentScreen',student:'studentScreen'};
     showScreen(screens[currentRole]||'teacherScreen');
-  } catch(e) {
-    showScreen(screens[currentRole]||'teacherScreen');
+  } else {
+    alert('كلمة السر غلط!
+كلمة السر الصحيحة: riwaq123');
   }
-  btn.textContent='دخول ←';
-  btn.disabled=false;
 }
 
 async function saveExamResult(result) {
